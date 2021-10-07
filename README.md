@@ -1,6 +1,7 @@
 # MCXMLParser
 
 > A Swift Package for importing and exporting XML files into Swift applications. 
+
 I created this package because I needed a simple way to read and write XML files and want to avoid using Cocoapods in an application I was working on. Please note that I am no master or even adept with XML and there may be bugs within this package as well as feature implementations that aren't finished. If you'd like to help out, you can do so. See the `Further Development/Assistance` section below! :)
 
 [![Swift Version][swift-image]][swift-url]
@@ -121,8 +122,8 @@ For a list of planned changes and updates, please see the current list of [open 
 <!--* 0.0.2-->
 <!--    * Fixed iOS dependency issues-->
 <!--    * *NOTE:* Minimum iOS version is now iOS 13.0-->
-* 0.0.1
-    * Work in progress
+<!-- * 0.0.1
+    * Work in progress -->
 
 ## Meta
 
@@ -131,7 +132,7 @@ Michael Craun – [@opkurix](https://twitter.com/opkurix) – michael.craun@gmai
 Distributed under the GNU GPLv3 license. See ``LICENSE`` for more information.
 
 ### Copyright
-The material used in this package (and more specifically it's tests) is Open Game Conent, and is licensed for public use under the terms of the Open Game License v1.0a Copyright 2000, Wizards of the Coast, Inc. Please visit [Wizards of the Coast] for more information regarding the OGL.
+The material used in this package (and more specifically it's tests) is Open Game Conent, and is licensed for public use under the terms of the Open Game License v1.0a Copyright 2000, Wizards of the Coast, Inc. Please visit [Wizards of the Coast](https://media.wizards.com/2016/downloads/DND/SRD-OGL_V5.1.pdf) for more information regarding the OGL.
 
 [https://github.com/Michaelcraun/github-link](https://github.com/Michaelcraun/)
 
@@ -143,4 +144,3 @@ The material used in this package (and more specifically it's tests) is Open Gam
 [travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
 [codebeat-image]: https://codebeat.co/badges/c19b47ea-2f9d-45df-8458-b2d952fe9dad
 [codebeat-url]: https://codebeat.co/projects/github-com-vsouza-awesomeios-com
-[WotC Link]: https://media.wizards.com/2016/downloads/DND/SRD-OGL_V5.1.pdf
