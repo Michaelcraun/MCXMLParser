@@ -23,6 +23,7 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "MCXMLParserTests",
-            dependencies: ["MCXMLParser"]),
+            dependencies: ["MCXMLParser"],
+            resources: [.process("barbarian.xml")]),
     ]
 )

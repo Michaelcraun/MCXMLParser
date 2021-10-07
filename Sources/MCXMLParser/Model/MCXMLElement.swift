@@ -103,3 +103,31 @@ extension MCXMLElement: Equatable {
             "\(String(describing: lhs.value))" == "\(String(describing: rhs.value))"
     }
 }
+
+extension MCXMLElement: CustomStringConvertible {
+    public var description: String { raw }
+}
+
+extension MCXMLElement {
+    subscript(_ name: String) -> MCXMLElement {
+        for child in children {
+            if child.name == name {
+                return child
+            }
+        }
+        fatalError("\(raw) does not contain child with name \(name)...")
+    }
+}
+
+extension Array where Element == MCXMLElement {
+    subscript(_ name: String) -> MCXMLElement {
+        for element in self {
+            for child in element.children {
+                if child.name == name {
+                    return child
+                }
+            }
+        }
+        fatalError("Could not find child with name \(name) in element!")
+    }
+}

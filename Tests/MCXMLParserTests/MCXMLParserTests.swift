@@ -65,28 +65,23 @@ final class MCXMLParserTests: XCTestCase {
     
     func testXMLParse() {
         
-        let rawXML = #"""
-        <?xml version='1.0' encoding='utf-8'?>
-        <compendium version="5" auto_indent="NO">
-            <class>
-                <name>Barbarian</name>
-                <hd>12</hd>
-                <proficiency>Strength, Constitution</proficiency>
-                <numSkills>2</numSkills>
-                <autolevel level="1">
-                    <feature optional="YES">
-                        <name>Starting Barbarian</name>
-                        <text>As a 1st-level Barbarian</text>
-                        <text></text>
-                    </feature>
-                </autolevel>
-            </class>
-        </compendium>
-        """#
+        let expectation = XCTestExpectation(description: "finished parsing")
         
-        let document = MCXMLDocument(raw: rawXML)
-        print(document.raw)
+        let path = Bundle.module.url(forResource: "barbarian", withExtension: "xml")!
+        let contents = (try? String(contentsOf: path)) ?? ""
         
+        let document = MCXMLDocument(raw: contents)
+        document.parse { error in
+            if let error = error {
+                print("finished with error:", error.localizedDescription)
+            } else {
+                print("finished successfully with document:", document.description.condensed.truncated())
+                print("which matches input:", document.description.condensed == contents.condensed)
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 2)
     }
     
 }
