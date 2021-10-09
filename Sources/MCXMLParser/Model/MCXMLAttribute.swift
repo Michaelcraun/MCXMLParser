@@ -13,6 +13,12 @@ public struct MCXMLAttribute {
     var value: Any
     var children: [MCXMLElement]?
     
+    public init(name: String, value: Any, children: [MCXMLElement]? = nil) {
+        self.children = children
+        self.name = name
+        self.value = value
+    }
+    
 }
 
 extension MCXMLAttribute: Equatable {

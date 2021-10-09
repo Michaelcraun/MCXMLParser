@@ -14,11 +14,11 @@ public class MCXMLDocument: NSObject {
     private var onParsed: MCXMLDocumentParsingCompletion?
     private var currentElement: MCXMLElement?
     
-    var encoding: String?
-    var version: String?
+    public var encoding: String?
+    public var version: String?
     
-    var raw: String
-    var elements: [MCXMLElement]
+    public var raw: String
+    public var elements: [MCXMLElement]
     
     /// Initializer for parsing an XML from disk
     public init(raw: String) {
@@ -38,12 +38,12 @@ public class MCXMLDocument: NSObject {
         self.raw = "<?xml version=\"\(version)\" encoding=\"\(encoding)\"?>\n"
     }
     
-    func add(element: MCXMLElement) {
+    public func add(element: MCXMLElement) {
         element.level = 0
         self.elements.append(element)
     }
     
-    func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = [], toElementWith path: String? = nil) -> MCXMLDocument {
+    public func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = [], toElementWith path: String? = nil) -> MCXMLDocument {
         
         if let path = path {
             if path.contains("/") {

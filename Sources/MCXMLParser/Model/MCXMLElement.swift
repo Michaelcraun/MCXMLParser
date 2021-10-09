@@ -45,14 +45,53 @@ public class MCXMLElement {
         }
     }
     
-    init(name: String, attributes: [MCXMLAttribute] = [], value: Any? = nil, children: [MCXMLElement] = []) {
-        self.attributes = attributes
+    public init(name: String) {
         self.name = name
+    }
+    
+    public convenience init(name: String, attributes: [MCXMLAttribute]) {
+        self.init(name: name)
+        self.attributes = attributes
+    }
+    
+    public convenience init(name: String, children: [MCXMLElement]) {
+        self.init(name: name)
+        self.children = children
+    }
+    
+    public convenience init(name: String, attributes: [MCXMLAttribute], children: [MCXMLElement]) {
+        self.init(name: name, attributes: attributes)
+        self.children = children
+    }
+    
+    public convenience init(name: String, value: Any?) {
+        self.init(name: name)
         self.value = value
-        
-        for child in children {
-            add(element: child)
-        }
+    }
+    
+    public convenience init(name: String, attributes: [MCXMLAttribute], value: Any?) {
+        self.init(name: name, attributes: attributes)
+        self.value = value
+    }
+    
+    public convenience init(name: String, attributes: [MCXMLAttribute], value: Any?, children: [MCXMLElement]) {
+        self.init(name: name, attributes: attributes, value: value)
+        self.children = children
+    }
+    
+    public convenience init(name: String, attributes: [String : Any]) {
+        self.init(name: name)
+        self.attributes = attributes.map { MCXMLAttribute(name: $0, value: $1) }
+    }
+    
+    public convenience init(name: String, attributes: [String : Any], value: Any?) {
+        self.init(name: name, attributes: attributes)
+        self.value = value
+    }
+    
+    public convenience init(name: String, attributes: [String : Any], value: Any?, children: [MCXMLElement]) {
+        self.init(name: name, attributes: attributes, value: value)
+        self.children = children
     }
     
     private func childrenTags() -> String {
@@ -81,12 +120,12 @@ public class MCXMLElement {
         
     }
     
-    func add(element: MCXMLElement) {
+    public func add(element: MCXMLElement) {
         element.level = level + 1
         self.children.append(element)
     }
     
-    func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = []) -> MCXMLElement {
+    public func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = []) -> MCXMLElement {
         
         self.add(element: MCXMLElement(name: name, attributes: attributes, value: value, children: []))
         return self

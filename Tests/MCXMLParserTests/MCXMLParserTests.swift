@@ -84,4 +84,10 @@ final class MCXMLParserTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
     }
     
+    func testCreateElementWithDictionaryAttributes() {
+        let element = MCXMLElement(name: "foo", attributes: ["bar" : true])
+        XCTAssertEqual(element.attributes.first?.name, "bar")
+        XCTAssertEqual(element.attributes.first?.value as? Bool ?? false, true)
+    }
+    
 }
