@@ -122,8 +122,8 @@ For a list of planned changes and updates, please see the current list of [open 
 <!--* 0.0.2-->
 <!--    * Fixed iOS dependency issues-->
 <!--    * *NOTE:* Minimum iOS version is now iOS 13.0-->
-<!-- * 0.0.1
-    * Work in progress -->
+* 0.0.1
+    * First release candidate!! :D
 
 ## Meta
 
