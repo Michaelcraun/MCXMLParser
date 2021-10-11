@@ -45,19 +45,10 @@ func load() {
 }
 ```
 
-Creating and modifying an XML document can be accomplished in various ways after creating a new instance of `MCXMLDocument`. You can:
-- Chain multiple `add(element:)` or `addElementWith(name:)` calls on the `MCXMLDocument` (and its children)
-- Create instances of `MCXMLElements` manually and add them one-by-one to either the `MCXMLDocument` or a created instance of `MCXMLElement`
+Creating and modifying an XML document can be accomplished in various ways after creating a new instance of `MCXMLDocument`. An example of the most basic and easiest to read and use has been provided below, but other ways do exist. For more examples, you can check out the documentation provided!
 
 ```swift
 import MCXMLParser
-
-func createByChainingElements() {
-    let document = MCXMLDocument(version: "1.0", encoding: "UTF-8")
-    document.add(element: MCXMLElement(name: "foo")
-        .add(element: MCXMLElement(name: "bar")
-    )
-}
 
 func createManually() {
     let document = MCXMLDocument(version: "1.0", encoding: "UTF-8")
@@ -70,6 +61,8 @@ func createManually() {
 ``` 
 
 `MCXMLParser` also handles XML attributes and values on all instances of `MCXMLElement`. Attributes and values can be added directly in the initializer of `MCXMLElement` or constructed and added later. Values for both `MCXMLElement` and `MCXMLAttribute` instances are handled intelligently and automatically type-casted into an appropriate type. For example, if the a child of the XML you are parsing has attributes of `foo="5" bar="true"`, these values will be automatically type-cated into an Int and Bool, respectively.
+
+As of v0.0.2, you can also add attributes to an instance of `MCXMLElement` in the form of a Swift `Dictionary`! For an exmple of this, please see the documentation.
 
 ```swift
 import MCXMLParser
@@ -121,6 +114,7 @@ For a list of planned changes and updates, please see the current list of [open 
     * Documentation and performance improvements
 * 0.0.2
     * Fixed several build issues
+    * Attributes of `MCXMLElement`'s can now be added via Swift `Dictionary`
 * 0.0.1
     * First release candidate!! :D
 
