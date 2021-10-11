@@ -116,12 +116,11 @@ For a list of planned changes and updates, please see the current list of [open 
 <!--    * Fixed some layout issues-->
 <!--* 0.0.4-->
 <!--    * Fixed public availability of needed functionality-->
-<!--* 0.0.3-->
-<!--    * Fixed iOS dependency issues-->
-<!--    * *NOTE:* Minimum iOS version is now iOS 14.0-->
-<!--* 0.0.2-->
-<!--    * Fixed iOS dependency issues-->
-<!--    * *NOTE:* Minimum iOS version is now iOS 13.0-->
+* 0.0.3
+    * `MCXMLParser` is now `MCXML`
+    * Documentation and performance improvements
+* 0.0.2
+    * Fixed several build issues
 * 0.0.1
     * First release candidate!! :D
 
