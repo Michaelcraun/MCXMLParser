@@ -17,9 +17,9 @@ public class MCXMLElement {
     }
     
     var name: String
-    var attributes: [MCXMLAttribute] = []
-    var value: Any? = nil
-    var children: [MCXMLElement] = []
+    public var attributes: [MCXMLAttribute] = []
+    public var value: Any? = nil
+    public var children: [MCXMLElement] = []
     var level: Int = 0 {
         didSet {
             for child in children {
@@ -28,7 +28,7 @@ public class MCXMLElement {
         }
     }
     
-    var raw: String {
+    public var raw: String {
         let startTag = startTag()
         if children.isEmpty {
             if let value = value {
@@ -40,7 +40,7 @@ public class MCXMLElement {
             return """
             \(startTag)
             \(children)
-            \(indent)<\(name)>
+            \(indent)</\(name)>
             """
         }
     }
@@ -120,16 +120,31 @@ public class MCXMLElement {
         
     }
     
-    public func add(element: MCXMLElement) {
+    @discardableResult
+    public func add(element: MCXMLElement) -> MCXMLElement {
         element.level = level + 1
         self.children.append(element)
+        return element
     }
     
-    public func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = []) -> MCXMLElement {
-        
-        self.add(element: MCXMLElement(name: name, attributes: attributes, value: value, children: []))
-        return self
-        
+    @discardableResult
+    public func addElementWith(name: String) -> MCXMLElement {
+        return add(element: MCXMLElement(name: name))
+    }
+    
+    @discardableResult
+    public func addElementWith(name: String, value: Any?) -> MCXMLElement {
+        return add(element: MCXMLElement(name: name, value: value))
+    }
+    
+    @discardableResult
+    public func addElementWith(name: String, value: Any?, attributes: [MCXMLAttribute]) -> MCXMLElement {
+        return add(element: MCXMLElement(name: name, attributes: attributes, value: value))
+    }
+    
+    @discardableResult
+    public func addElementWith(name: String, value: Any?, attributes: [String : Any]) -> MCXMLElement {
+        return add(element: MCXMLElement(name: name, attributes: attributes, value: value))
     }
     
 }

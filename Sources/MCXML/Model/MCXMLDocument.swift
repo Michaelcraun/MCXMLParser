@@ -13,12 +13,28 @@ public class MCXMLDocument: NSObject {
     
     private var onParsed: MCXMLDocumentParsingCompletion?
     private var currentElement: MCXMLElement?
+    var raw: String
     
+    public var elements: [MCXMLElement]
     public var encoding: String?
     public var version: String?
     
-    public var raw: String
-    public var elements: [MCXMLElement]
+    public var xml: String {
+        let copy = raw
+        let elements = elements.map { $0.raw }.joined(separator: "\n")
+        return "\(copy)\(elements)"
+    }
+    
+    /**
+     * Default initializer for MCXMLDocument, This initializes an XML document with the most widely used parameters:
+     * `version=1.0 encoding=utf-8`.
+     */
+    public override init() {
+        self.elements = []
+        self.encoding = "utf-8"
+        self.version = "1.0"
+        self.raw = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+    }
     
     /// Initializer for parsing an XML from disk
     public init(raw: String) {
@@ -38,38 +54,21 @@ public class MCXMLDocument: NSObject {
         self.raw = "<?xml version=\"\(version)\" encoding=\"\(encoding)\"?>\n"
     }
     
-    public func add(element: MCXMLElement) {
+    @discardableResult
+    public func add(element: MCXMLElement) -> MCXMLElement {
         element.level = 0
         self.elements.append(element)
+        return element
     }
     
-    public func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = [], toElementWith path: String? = nil) -> MCXMLDocument {
-        
-        if let path = path {
-            if path.contains("/") {
-                var pathComponents = path.components(separatedBy: "/")
-                let rootComponent = pathComponents.removeFirst()
-                var currentElement = self.elements.first(where: { $0.name == rootComponent })
-                for component in pathComponents {
-                    guard let index = currentElement?.children.firstIndex(where: { $0.name == component }) else {
-                        print("MCXMLDocument - \(#function) could not find element with name: \(path)")
-                        return self
-                    }
-                    currentElement = currentElement?.children[index]
-                }
-                
-                guard let currentElement = currentElement else { fatalError() }
-                currentElement.add(element: MCXMLElement(name: name, attributes: attributes, value: value, children: []))
-            } else if let index = self.elements.firstIndex(where: { $0.name == path }) {
-                self.elements[index].add(element: MCXMLElement(name: name, attributes: attributes, value: value, children: []))
-            } else {
-                print("MCXMLDocument - \(#function) could not find element with name: \(path)")
-            }
-        } else {
-            self.add(element: MCXMLElement(name: name, attributes: attributes, value: value, children: []))
-        }
-        return self
-        
+    @discardableResult
+    public func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = []) -> MCXMLElement {
+        return self.add(
+            element: MCXMLElement(
+                name: name,
+                attributes: attributes,
+                value: value,
+                children: []))
     }
     
     public func parse(_ completion: @escaping MCXMLDocumentParsingCompletion) {
@@ -81,16 +80,6 @@ public class MCXMLDocument: NSObject {
         parser.delegate = self
         parser.parse()
         
-    }
-    
-}
-
-extension MCXMLDocument {
-    
-    public override var description: String {
-        let copy = raw
-        let elements = elements.map { $0.raw }.joined(separator: "\n")
-        return "\(copy)\(elements)"
     }
     
 }
@@ -127,7 +116,6 @@ extension MCXMLDocument: XMLParserDelegate {
     
     public func parser(_ parser: XMLParser, resolveExternalEntityName name: String, systemID: String?) -> Data? {
         fatalError("\(#function) is not handled! Please create an issue on GitHub!")
-        return nil
     }
     
     public func parser(_ parser: XMLParser, foundNotationDeclarationWithName name: String, publicID: String?, systemID: String?) {
