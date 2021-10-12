@@ -71,23 +71,37 @@ final class MCXMLParserTests: XCTestCase {
     
     func testXMLParse() {
         
-        let expectation = XCTestExpectation(description: "finished parsing")
-        
         let path = Bundle.module.url(forResource: "barbarian", withExtension: "xml")!
         let contents = (try? String(contentsOf: path)) ?? ""
         
-        let document = MCXMLDocument(raw: contents)
-        document.parse { error in
-            if let error = error {
-                print("finished with error:", error.localizedDescription)
-            } else {
-                print("finished successfully with document:", document.raw.condensed.truncated())
-                print("which matches input:", document.raw.condensed == contents.condensed)
-            }
-            expectation.fulfill()
+        guard let document = MCXMLDocument(raw: contents) else {
+            XCTFail("Could not initialize document!")
+            return
         }
         
-        wait(for: [expectation], timeout: 2)
+        print(document.xml)
+        
+    }
+    
+    func testSubscripting() {
+        
+        let document = MCXMLDocument()
+        let child = document.addElementWith(name: "foo")
+        let childOfChild = child.addElementWith(name: "bar")
+        childOfChild.addElementWith(name: "foo-2")
+        
+        let foo = document["foo"]
+        let foobar = document["foo"]["bar"]
+        let foo2 = foobar["foo-2"]
+        
+        XCTAssertEqual(foo.raw, child.raw)
+        
+        XCTAssertEqual(foobar.name, "bar")
+        XCTAssertNil(foobar.value)
+        
+        XCTAssertEqual(foo2.name, "foo-2")
+        XCTAssertNil(foo2.value)
+        
     }
     
 }

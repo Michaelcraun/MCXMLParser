@@ -1,90 +1,39 @@
 //
 //  File.swift
-//  File
+//  
 //
-//  Created by Michael Craun on 9/12/21.
+//  Created by Michael Craun on 10/12/21.
 //
 
 import Foundation
 
-public class MCXMLDocument: NSObject {
+class MCXMLParser: NSObject {
     
-    public typealias MCXMLDocumentParsingCompletion = (Error?) -> Void
+    var currentElement: MCXMLElement?
+    var data: Data
+    var document: MCXMLDocument
     
-    private var onParsed: MCXMLDocumentParsingCompletion?
-    private var currentElement: MCXMLElement?
-    var raw: String
-    
-    public var elements: [MCXMLElement]
-    public var encoding: String?
-    public var version: String?
-    
-    public var xml: String {
-        let copy = raw
-        let elements = elements.map { $0.raw }.joined(separator: "\n")
-        return "\(copy)\(elements)"
-    }
-    
-    /**
-     * Default initializer for MCXMLDocument, This initializes an XML document with the most widely used parameters:
-     * `version=1.0 encoding=utf-8`.
-     */
-    public override init() {
-        self.elements = []
-        self.encoding = "utf-8"
-        self.version = "1.0"
-        self.raw = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-    }
-    
-    /// Initializer for parsing an XML from disk
-    public init(raw: String) {
-        self.elements = []
-        self.raw = raw
+    public init(document: MCXMLDocument, data: Data) {
         
-        self.encoding = raw.xmlEncoding
-        self.version = raw.xmlVersion
-    }
-    
-    /// Initializer for creating an XML
-    public init(version: String, encoding: String) {
-        self.encoding = encoding
-        self.version = version
+        self.data = data
+        self.document = document
         
-        self.elements = []
-        self.raw = "<?xml version=\"\(version)\" encoding=\"\(encoding)\"?>\n"
     }
     
-    @discardableResult
-    public func add(element: MCXMLElement) -> MCXMLElement {
-        element.level = 0
-        self.elements.append(element)
-        return element
-    }
-    
-    @discardableResult
-    public func addElementWith(name: String, value: Any? = nil, attributes: [MCXMLAttribute] = []) -> MCXMLElement {
-        return self.add(
-            element: MCXMLElement(
-                name: name,
-                attributes: attributes,
-                value: value,
-                children: []))
-    }
-    
-    public func parse(_ completion: @escaping MCXMLDocumentParsingCompletion) {
+    func parse() throws {
         
-        self.onParsed = completion
-        
-        guard let data = raw.data(using: .utf8) else { return }
         let parser = XMLParser(data: data)
         parser.delegate = self
-        parser.parse()
+        
+        if !parser.parse() {
+            throw MCXMLError.parseFailure
+        }
         
     }
     
 }
 
-extension MCXMLDocument: XMLParserDelegate {
+extension MCXMLParser: XMLParserDelegate {
     
     public func parser(_ parser: XMLParser, foundComment comment: String) {
         fatalError("\(#function) is not handled! Please create an issue on GitHub!")
@@ -173,31 +122,17 @@ extension MCXMLDocument: XMLParserDelegate {
     
     public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if let currentElement = currentElement, currentElement.name == elementName {
+            self.document.elements.append(currentElement)
             self.currentElement = nil
         }
     }
     
-    public func parserDidEndDocument(_ parser: XMLParser) {
-        onParsed?(nil)
-    }
-    
     public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
-        onParsed?(parseError)
+        print(parseError.localizedDescription)
     }
     
     public func parser(_ parser: XMLParser, validationErrorOccurred validationError: Error) {
-        onParsed?(validationError)
+        print(validationError.localizedDescription)
     }
     
-}
-
-extension MCXMLDocument {
-    subscript(_ name: String) -> MCXMLElement {
-        for element in elements {
-            if element.name == name {
-                return element
-            }
-        }
-        fatalError("Could not find element with name \(name) in document...")
-    }
 }
