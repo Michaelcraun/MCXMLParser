@@ -10,7 +10,7 @@ import Foundation
 extension String {
     
     /// A single-line representation of a given XML String
-    var condensed: String { rawElements.joined() }
+    var condensed: String { self.replacingOccurrences(of: "\t", with: "").replacingOccurrences(of: "\n", with: "") }
     
     var containsEndTag: Bool { contains("</") }
     
@@ -19,8 +19,6 @@ extension String {
         let components = self.rawElements.filter { !$0.isXmlDeclaration }
         var elements: [MCXMLElement] = []
         var currentElement: MCXMLElement!
-        
-        print(#function, components)
         
         for component in components {
             if component.containsEndTag {

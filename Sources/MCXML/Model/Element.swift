@@ -9,40 +9,68 @@ import Foundation
 
 public class MCXMLElement {
     
-    private var indent: String {
-        if level == 0 {
-            return ""
-        }
-        return (1...level).map { _ in "  " }.joined()
-    }
+    public var parent: MCXMLElement?
+    
+    public var children: [MCXMLElement] = []
     
     public var name: String
-    public var attributes: [MCXMLAttribute] = []
+    
     public var value: Any? = nil
-    public var children: [MCXMLElement] = []
-    var level: Int = 0 {
-        didSet {
-            for child in children {
-                child.level = level + 1
+    
+    public var attributes: [MCXMLAttribute] = []
+    
+    public var xml: String {
+
+        var xml = String()
+        
+        // open element
+        xml += indent
+        xml += "<\(name)"
+        
+        if attributes.count > 0 {
+            // insert attributes
+            for attribute in attributes {
+                xml += " \(attribute.name)=\"\(attribute.value)\""
             }
         }
+        
+        if value == nil && children.count == 0 {
+            // close element
+            xml += " />"
+        } else {
+            if children.count > 0 {
+                // add children
+                xml += ">\n"
+                for child in children {
+                    xml += "\(child.xml)\n"
+                }
+                // add indentation
+                xml += indent
+                xml += "</\(name)>"
+            } else {
+                // insert string value and close element
+                xml += ">\(value ?? "")</\(name)>"
+            }
+        }
+        
+        return xml
+        
     }
     
-    public var raw: String {
-        let startTag = startTag()
-        if children.isEmpty {
-            if let value = value {
-                return "\(startTag)\(value)</\(name)>"
-            }
-            return "\(startTag)</\(name)>"
-        } else {
-            let children = childrenTags()
-            return """
-            \(startTag)
-            \(children)
-            \(indent)</\(name)>
-            """
+    var parents: [MCXMLElement] {
+        
+        var parents: [MCXMLElement] = []
+        var element = self
+        while let parent = element.parent {
+            parents.append(parent)
+            element = parent
         }
+        return parents
+        
+    }
+    
+    private var indent: String {
+        return parents.count <= 1 ? "" : (2...parents.count).map { _ in "\t" }.joined()
     }
     
     public init(name: String) {
@@ -97,7 +125,7 @@ public class MCXMLElement {
     private func childrenTags() -> String {
         var tags = ""
         for child in children {
-            let tag = child.raw
+            let tag = child.xml
             tags += "\(tag)\(child == children.last ? "" : "\n")"
         }
         return tags
@@ -122,8 +150,8 @@ public class MCXMLElement {
     
     @discardableResult
     public func add(element: MCXMLElement) -> MCXMLElement {
-        element.level = level + 1
-        self.children.append(element)
+        element.parent = self
+        children.append(element)
         return element
     }
     
@@ -135,6 +163,11 @@ public class MCXMLElement {
     @discardableResult
     public func addElementWith(name: String, value: Any?) -> MCXMLElement {
         return add(element: MCXMLElement(name: name, value: value))
+    }
+    
+    @discardableResult
+    public func addElementWith(name: String, attributes: [String : Any]) -> MCXMLElement {
+        return add(element: MCXMLElement(name: name, attributes: attributes))
     }
     
     @discardableResult

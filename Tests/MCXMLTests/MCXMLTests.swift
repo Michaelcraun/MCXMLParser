@@ -21,12 +21,21 @@ final class MCXMLParserTests: XCTestCase {
         let document = MCXMLDocument()
         // Add a new child to a pre-existing document and capture a reference to the new child
         let _ = document.addElementWith(name: "foo")
+        
+        let document2 = MCXMLDocument()
         // Add a new child to a pre-existing document within the document withough capturing a reference
-        document.addElementWith(name: "foo-2")
+        document2.addElementWith(name: "foo")
+        
         
         XCTAssertEqual(
             document.xml.condensed,
-            #"<?xml version="1.0" encoding="utf-8"?><foo></foo><foo-2></foo-2>"#)
+            #"<?xml version="1.0" encoding="utf-8"?><foo />"#)
+        XCTAssertEqual(
+            document2.xml.condensed,
+            #"<?xml version="1.0" encoding="utf-8"?><foo />"#)
+        XCTAssertEqual(
+            document.xml,
+            document2.xml)
         
     }
     
@@ -41,7 +50,7 @@ final class MCXMLParserTests: XCTestCase {
         
         XCTAssertEqual(
             document.xml.condensed,
-            #"<?xml version="1.0" encoding="utf-8"?><foo><bar><foo-2></foo-2></bar></foo>"#)
+            #"<?xml version="1.0" encoding="utf-8"?><foo><bar><foo-2 /></bar></foo>"#)
         
     }
     
@@ -64,22 +73,21 @@ final class MCXMLParserTests: XCTestCase {
         let dictionaryElement = MCXMLElement(name: "foo", attributes: ["bar" : 1])
         let attributesElement = MCXMLElement(name: "foo", attributes: [MCXMLAttribute(name: "bar", value: 1)])
         
-        XCTAssertEqual(dictionaryElement.raw.condensed, #"<foo bar="1"></foo>"#)
-        XCTAssertEqual(attributesElement.raw.condensed, #"<foo bar="1"></foo>"#)
+        XCTAssertEqual(dictionaryElement.xml.condensed, #"<foo bar="1" />"#)
+        XCTAssertEqual(attributesElement.xml.condensed, #"<foo bar="1" />"#)
         
     }
     
-    func testXMLParse() {
+    func testXMLParse() throws {
         
         let path = Bundle.module.url(forResource: "barbarian", withExtension: "xml")!
         let contents = (try? String(contentsOf: path)) ?? ""
         
-        guard let document = MCXMLDocument(raw: contents) else {
-            XCTFail("Could not initialize document!")
-            return
-        }
+        let document = try MCXMLDocument(raw: contents)
         
-        print(document.xml)
+        XCTAssertEqual(
+            document.xml.condensed.truncated(),
+            #"<?xml version="1.0" encoding="utf-8"?><compendium auto_indent="NO" version="5"><class><name>Barbaria..."#)
         
     }
     
@@ -94,7 +102,7 @@ final class MCXMLParserTests: XCTestCase {
         let foobar = document["foo"]["bar"]
         let foo2 = foobar["foo-2"]
         
-        XCTAssertEqual(foo.raw, child.raw)
+        XCTAssertEqual(foo.xml, child.xml)
         
         XCTAssertEqual(foobar.name, "bar")
         XCTAssertNil(foobar.value)

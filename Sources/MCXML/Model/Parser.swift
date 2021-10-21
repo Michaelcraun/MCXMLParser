@@ -9,15 +9,17 @@ import Foundation
 
 class MCXMLParser: NSObject {
     
+    let document: MCXMLDocument
+    let data: Data
+    
+    var currentParent: MCXMLElement?
     var currentElement: MCXMLElement?
-    var data: Data
-    var document: MCXMLDocument
+    var currentValue = ""
     
     public init(document: MCXMLDocument, data: Data) {
-        
         self.data = data
         self.document = document
-        
+        currentParent = document
     }
     
     func parse() throws {
@@ -25,7 +27,9 @@ class MCXMLParser: NSObject {
         let parser = XMLParser(data: data)
         parser.delegate = self
         
-        if !parser.parse() {
+        if parser.parse() {
+            print("Successfully initialized document: \n\(document.xml)")
+        } else {
             throw MCXMLError.parseFailure
         }
         
@@ -92,39 +96,23 @@ extension MCXMLParser: XMLParserDelegate {
     }
     
     public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
-        let element = MCXMLElement(name: elementName)
-        if !attributeDict.isEmpty {
-            element.attributes = attributeDict.map { key, value in
-                MCXMLAttribute(name: key, value: value)
-            }
-        }
-        
-        if let currentElement = currentElement {
-            if currentElement.children.isEmpty {
-                currentElement.children.append(element)
-            } else {
-                currentElement.children.last?.children.append(element)
-            }
-        } else {
-            self.currentElement = element
-        }
+        currentValue = ""
+        currentElement = currentParent?.addElementWith(name: elementName, attributes: attributeDict)
+        currentParent = currentElement
     }
     
     public func parser(_ parser: XMLParser, foundCharacters string: String) {
-        if let currentElement = currentElement {
-            if currentElement.children.isEmpty {
-                currentElement.value = string
-            } else {
-                currentElement.children.last?.value = string
-            }
-        }
+        currentValue.append(string)
+        currentElement?.value = currentValue.isEmpty ? nil : currentValue
     }
     
     public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        if let currentElement = currentElement, currentElement.name == elementName {
-            self.document.elements.append(currentElement)
-            self.currentElement = nil
-        }
+        currentParent = currentParent?.parent
+        currentElement = nil
+    }
+    
+    func parserDidEndDocument(_ parser: XMLParser) {
+        
     }
     
     public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
