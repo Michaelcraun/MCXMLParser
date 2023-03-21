@@ -124,9 +124,6 @@ Michael Craun – [@opkurix](https://twitter.com/opkurix) – michael.craun@gmai
 
 Distributed under the GNU GPLv3 license. See ``LICENSE`` for more information.
 
-### Copyright
-The material used in this package (and more specifically it's tests) is Open Game Conent, and is licensed for public use under the terms of the Open Game License v1.0a Copyright 2000, Wizards of the Coast, Inc. Please visit [Wizards of the Coast](https://media.wizards.com/2016/downloads/DND/SRD-OGL_V5.1.pdf) for more information regarding the OGL.
-
 [https://github.com/Michaelcraun/github-link](https://github.com/Michaelcraun/)
 
 [swift-image]:https://img.shields.io/badge/swift-3.0-orange.svg
