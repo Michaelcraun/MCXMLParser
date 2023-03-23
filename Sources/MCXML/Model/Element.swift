@@ -180,10 +180,8 @@ public class MCXMLElement {
         return add(element: MCXMLElement(name: name, attributes: attributes, value: value))
     }
     
-    public subscript(_ child: String) -> MCXMLElement {
-        guard let child = children.first(where: { $0.name == child }) else {
-            fatalError("XML element \(name) does not contain child with name \(child)!")
-        }
+    public subscript(_ child: String) -> MCXMLElement? {
+        guard let child = children.first(where: { $0.name == child }) else { return nil }
         return child
     }
     

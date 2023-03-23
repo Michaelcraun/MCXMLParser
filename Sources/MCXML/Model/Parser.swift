@@ -28,7 +28,7 @@ class MCXMLParser: NSObject {
         parser.delegate = self
         
         if parser.parse() {
-            print("Successfully initialized document: \n\(document.xml)")
+            print("Successfully initialized document: \(document.xml.condensed.truncated())")
         } else {
             throw MCXMLError.parseFailure
         }
